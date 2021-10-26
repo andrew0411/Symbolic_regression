@@ -720,7 +720,7 @@ class SymbolicRegressor(BaseSymbolic, RegressorMixin):
         - 'best_length' : The length of the best program in the generation.
         - 'best_fitness' : The fitness of the best program in the generation.
         - 'best_oob_fitness' : The out of bag fitness of the best program in
-          the generation (requires `max_samples` < 1.0).
+           the generation (requires `max_samples` < 1.0).
         - 'generation_time' : The time it took for the generation to evolve.
     See Also
     --------
