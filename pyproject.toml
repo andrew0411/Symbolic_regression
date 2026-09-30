@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "symbolic-regression-gp"
+dynamic = ["version"]
+description = "Genetic Programming symbolic regression adapted from gplearn"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy",
+    "scipy",
+    "scikit-learn",
+    "joblib",
+]
+
+[project.optional-dependencies]
+dev = ["pandas", "pytest"]
+
+[tool.setuptools]
+packages = ["gp"]
+
+[tool.setuptools.dynamic]
+version = {attr = "gp.__version__"}
+
+[tool.setuptools.package-data]
+gp = ["LICENSE"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

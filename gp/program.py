@@ -1,3 +1,7 @@
+# Adapted from gplearn (https://github.com/trevorstephens/gplearn)
+# Original author: Trevor Stephens <trevorstephens.com>
+# License: BSD 3 clause (see gp/LICENSE). Modified for this repository.
+
 from copy import copy
 
 import numpy as np
@@ -406,10 +410,17 @@ class _Program(object):
         raw_fitness : float
             The raw fitness of the program.
         """
-        y_pred = self.execute(X)
-        if self.transformer:
-            y_pred = self.transformer(y_pred)
-        raw_fitness = self.metric(y, y_pred, sample_weight)
+        # Random programs may overflow (e.g. nested pow3); handled below.
+        with np.errstate(over='ignore', invalid='ignore'):
+            y_pred = self.execute(X)
+            if self.transformer:
+                y_pred = self.transformer(y_pred)
+            raw_fitness = self.metric(y, y_pred, sample_weight)
+
+        # np.argmin/np.argmax return the index of a NaN if one is present, so a
+        # non-finite fitness would win selection. Map it to the worst value.
+        if not np.isfinite(raw_fitness):
+            raw_fitness = -np.inf if self.metric.greater_is_better else np.inf
 
         return raw_fitness
 

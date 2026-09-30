@@ -1,3 +1,7 @@
+# Adapted from gplearn (https://github.com/trevorstephens/gplearn)
+# Original author: Trevor Stephens <trevorstephens.com>
+# License: BSD 3 clause (see gp/LICENSE). Modified for this repository.
+
 import numpy as np
 from joblib import wrap_non_picklable_objects
 
@@ -110,12 +114,12 @@ def _sigmoid(x1):
 
 
 def _power2(x1):
-    '''제곱'''
+    '''제곱. 중첩되면 overflow(inf)가 날 수 있으며, 이는 _Program.raw_fitness에서 최악값으로 처리한다'''
     return np.power(x1, 2)
 
 
 def _power3(x1):
-    '''세제곱'''
+    '''세제곱. 중첩되면 overflow(inf)가 날 수 있으며, 이는 _Program.raw_fitness에서 최악값으로 처리한다'''
     return np.power(x1, 3)
 
 add2 = _Function(function=np.add, name='add', arity=2)
@@ -133,8 +137,8 @@ sin1 = _Function(function=np.sin, name='sin', arity=1)
 cos1 = _Function(function=np.cos, name='cos', arity=1)
 tan1 = _Function(function=np.tan, name='tan', arity=1)
 sig1 = _Function(function=_sigmoid, name='sig', arity=1)
-pow1 = _Function(function=_power2, name='pow2', arity=1)
-pow2 = _Function(function=_power3, name='pow3', arity=1)
+square1 = _Function(function=_power2, name='pow2', arity=1)
+cube1 = _Function(function=_power3, name='pow3', arity=1)
 
 _function_map = {'add': add2,
                  'sub': sub2,
@@ -150,7 +154,7 @@ _function_map = {'add': add2,
                  'sin': sin1,
                  'cos': cos1,
                  'tan': tan1,
-                 'pow2': pow1,
-                 'pow3': pow2}
+                 'pow2': square1,
+                 'pow3': cube1}
 
     

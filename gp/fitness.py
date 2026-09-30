@@ -1,3 +1,7 @@
+# Adapted from gplearn (https://github.com/trevorstephens/gplearn)
+# Original author: Trevor Stephens <trevorstephens.com>
+# License: BSD 3 clause (see gp/LICENSE). Modified for this repository.
+
 import numbers
 
 import numpy as np

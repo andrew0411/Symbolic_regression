@@ -1,3 +1,7 @@
+# Adapted from gplearn (https://github.com/trevorstephens/gplearn)
+# Original author: Trevor Stephens <trevorstephens.com>
+# License: BSD 3 clause (see gp/LICENSE). Modified for this repository.
+
 import itertools
 from abc import ABCMeta, abstractmethod
 from time import time
@@ -472,8 +476,17 @@ class BaseSymbolic(BaseEstimator, metaclass=ABCMeta):
 
             parsimony_coefficient = None
             if self.parsimony_coefficient == 'auto':
-                parsimony_coefficient = (np.cov(length, fitness)[1, 0] /
-                                         np.var(length))
+                # Overflowed programs have infinite fitness, which would turn
+                # the covariance (and so every penalized fitness) into NaN.
+                finite = np.isfinite(fitness)
+                finite_length = np.asarray(length)[finite]
+                finite_fitness = np.asarray(fitness)[finite]
+                # np.cov also computes Var(fitness), unused here, which may
+                # overflow for huge but finite fitness values.
+                with np.errstate(over='ignore', invalid='ignore'):
+                    parsimony_coefficient = (np.cov(finite_length,
+                                                    finite_fitness)[1, 0] /
+                                             np.var(finite_length))
             for program in population:
                 program.fitness_ = program.fitness(parsimony_coefficient)
 
@@ -569,7 +582,7 @@ class BaseSymbolic(BaseEstimator, metaclass=ABCMeta):
         return self
 
 
-class SymbolicRegressor(BaseSymbolic, RegressorMixin):
+class SymbolicRegressor(RegressorMixin, BaseSymbolic):
 
     """A Genetic Programming symbolic regressor.
     A symbolic regressor is an estimator that begins by building a population
@@ -606,7 +619,9 @@ class SymbolicRegressor(BaseSymbolic, RegressorMixin):
           then terminals are selected. Tends to grow 'bushy' trees.
         - 'half and half' : Trees are grown through a 50/50 mix of 'full' and
           'grow', making for a mix of tree shapes in the initial population.
-    function_set : iterable, optional (default=('add', 'sub', 'mul', 'div'))
+    function_set : iterable, optional (default=('add', 'sub', 'mul', 'div',
+                   'sqrt', 'log', 'abs', 'neg', 'inv', 'sin', 'cos', 'tan',
+                   'pow2', 'pow3'))
         The functions to use when building and evolving programs. This iterable
         can include strings to indicate either individual functions as outlined
         below, or you can also include your own functions as built using the
@@ -630,6 +645,9 @@ class SymbolicRegressor(BaseSymbolic, RegressorMixin):
         - 'sin' : sine (radians), arity=1.
         - 'cos' : cosine (radians), arity=1.
         - 'tan' : tangent (radians), arity=1.
+        - 'pow2' : square, arity=1.
+        - 'pow3' : cube, arity=1.
+        Programs that overflow get the worst possible fitness.
     metric : str, optional (default='mean absolute error')
         The name of the raw fitness metric. Available options include:
         - 'mean absolute error'.
@@ -812,7 +830,7 @@ class SymbolicRegressor(BaseSymbolic, RegressorMixin):
         return y
 
 
-class SymbolicClassifier(BaseSymbolic, ClassifierMixin):
+class SymbolicClassifier(ClassifierMixin, BaseSymbolic):
 
     """A Genetic Programming symbolic classifier.
     A symbolic classifier is an estimator that begins by building a population
@@ -873,6 +891,8 @@ class SymbolicClassifier(BaseSymbolic, ClassifierMixin):
         - 'sin' : sine (radians), arity=1.
         - 'cos' : cosine (radians), arity=1.
         - 'tan' : tangent (radians), arity=1.
+        - 'pow2' : square, arity=1.
+        - 'pow3' : cube, arity=1.
     transformer : str, optional (default='sigmoid')
         The name of the function through which the raw decision function is
         passed. This function will transform the raw decision function into
@@ -1037,6 +1057,12 @@ class SymbolicClassifier(BaseSymbolic, ClassifierMixin):
     def _more_tags(self):
         return {'binary_only': True}
 
+    def __sklearn_tags__(self):
+        # scikit-learn >= 1.6 reads tags here; _more_tags is for older versions
+        tags = super().__sklearn_tags__()
+        tags.classifier_tags.multi_class = False
+        return tags
+
     def predict_proba(self, X):
         """Predict probabilities on test vectors X.
         Parameters
@@ -1082,7 +1108,7 @@ class SymbolicClassifier(BaseSymbolic, ClassifierMixin):
         return self.classes_.take(np.argmax(proba, axis=1), axis=0)
 
 
-class SymbolicTransformer(BaseSymbolic, TransformerMixin):
+class SymbolicTransformer(TransformerMixin, BaseSymbolic):
 
     """A Genetic Programming symbolic transformer.
     A symbolic transformer is a supervised transformer that begins by building
@@ -1153,6 +1179,8 @@ class SymbolicTransformer(BaseSymbolic, TransformerMixin):
         - 'sin' : sine (radians), arity=1.
         - 'cos' : cosine (radians), arity=1.
         - 'tan' : tangent (radians), arity=1.
+        - 'pow2' : square, arity=1.
+        - 'pow3' : cube, arity=1.
     metric : str, optional (default='pearson')
         The name of the raw fitness metric. Available options include:
         - 'pearson', for Pearson's product-moment correlation coefficient.

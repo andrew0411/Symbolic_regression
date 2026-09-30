@@ -1,0 +1,17 @@
+# 2026-09 WSL dl env에서 테스트·노트북 실행을 통과한 버전으로 고정
+name: symreg
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - ipykernel=7.3.0
+  - nbconvert=7.17.1
+  - pip:
+      - numpy==2.4.6
+      - scipy==1.17.1
+      - scikit-learn==1.9.0
+      - pandas==3.0.3
+      - joblib==1.5.3
+      - pytest==9.1.1
+      - -e .

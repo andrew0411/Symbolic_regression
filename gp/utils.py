@@ -1,6 +1,9 @@
+# Adapted from gplearn (https://github.com/trevorstephens/gplearn)
+# Original author: Trevor Stephens <trevorstephens.com>
+# License: BSD 3 clause (see gp/LICENSE). Modified for this repository.
+
 import numbers
 import numpy as np
-from numpy.lib.arraysetops import isin
 from joblib import cpu_count
 
 def check_random_state(seed):
@@ -49,7 +52,7 @@ def _partition_estimators(n_estimators, n_jobs):
 
     # Partition estimators between jobs
     n_estimators_per_job = (n_estimators // n_jobs) * np.ones(n_jobs,
-                                                              dtype=np.int)
+                                                              dtype=int)
     n_estimators_per_job[:n_estimators % n_jobs] += 1
     starts = np.cumsum(n_estimators_per_job)
 
