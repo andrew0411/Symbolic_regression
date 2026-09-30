@@ -6,7 +6,7 @@ from gp.functions import _function_map, make_function
 
 @pytest.mark.parametrize('name', sorted(_function_map))
 def test_builtin_functions_are_closed(name):
-    # 0, 음수, 0 근처 입력에서도 유한값을 내야 한다 (gplearn closure 규약)
+    # Must return finite values for zero, negative and near-zero inputs (gplearn closure requirement)
     function = _function_map[name]
     for value in (0., -1., 1e-4):
         args = [np.full(5, value) for _ in range(function.arity)]

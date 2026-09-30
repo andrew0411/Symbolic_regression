@@ -11,12 +11,12 @@ __all__ = ['make_function']
 class _Function(object):
 
     '''
-    Mathematical relationship 에 대한 representation
+    Representation of a mathematical relationship
 
     Parameters:
         function (callable) -- a function returns a numpy array of the same shape as its argument
         name (str) -- the name of the function
-        arity (int) -- the number of arguments that the function takes (인수)
+        arity (int) -- the number of arguments that the function takes
     '''
 
     def __init__(self, function, name, arity):
@@ -31,13 +31,13 @@ class _Function(object):
 def make_function(function, name, arity, wrap=True):
     
     '''
-    Function node 와 mathematical representation 만드는 함수
+    Make a function node, the representation of a mathematical relationship
 
     Parameters:
         function (callable) -- a function returns a numpy array of the same shape as its arguments
         name (str) -- the name of the function
-        arity (int) -- 함수가 받는 인수 개수
-        wrap (bool, optional) -- this option will wrap the function using cloudpickle, single-threaded 에서 돌릴 때는 set to false (default=True)
+        arity (int) -- the number of arguments that the function takes
+        wrap (bool, optional) -- this option will wrap the function using cloudpickle; set to False when running single-threaded (default=True)
     '''
 
     if not isinstance(arity, int):
@@ -114,12 +114,12 @@ def _sigmoid(x1):
 
 
 def _power2(x1):
-    '''제곱. 중첩되면 overflow(inf)가 날 수 있으며, 이는 _Program.raw_fitness에서 최악값으로 처리한다'''
+    '''Square. Nested calls may overflow to inf; _Program.raw_fitness gives such programs the worst fitness'''
     return np.power(x1, 2)
 
 
 def _power3(x1):
-    '''세제곱. 중첩되면 overflow(inf)가 날 수 있으며, 이는 _Program.raw_fitness에서 최악값으로 처리한다'''
+    '''Cube. Nested calls may overflow to inf; _Program.raw_fitness gives such programs the worst fitness'''
     return np.power(x1, 3)
 
 add2 = _Function(function=np.add, name='add', arity=2)

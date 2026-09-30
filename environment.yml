@@ -1,4 +1,4 @@
-# 2026-09 WSL dl env에서 테스트·노트북 실행을 통과한 버전으로 고정
+# Pinned to the versions that passed the tests and the notebook run (WSL, 2026-09)
 name: symreg
 channels:
   - conda-forge

@@ -10,7 +10,7 @@ REPO_DATA_DIR = Path(__file__).resolve().parent / 'dataset'
 
 def resolve_data_dir(data_dir=None):
     '''
-    Dataset 폴더를 정한다. 우선순위: data_dir 인자 > $DATA_ROOT/symbolic_regression (폴더가 있을 때) > repo의 dataset/
+    Resolve the dataset folder: data_dir argument > $DATA_ROOT/symbolic_regression (if it exists) > dataset/ in this repository
     '''
     if data_dir is not None:
         return Path(data_dir)
@@ -23,15 +23,15 @@ def resolve_data_dir(data_dir=None):
 def load_split(name, target='Heat of formation', index_col='Material',
                test_size=0.2, random_state=42, data_dir=None):
     '''
-    CSV를 읽어 train/test로 나누고 표준화한다. Scaler는 train에만 fit하고 test에는 transform만 한다
+    Read a CSV, split it into train/test and standardize the features. The scaler is fit on train only; test is only transformed
 
     Parameters:
-        name (str) -- dataset 이름, 예: 'high', 'mid', 'low'
-        target (str) -- 예측할 column
-        index_col (str) -- index로 쓸 column (feature에서 제외됨)
-        test_size (float) -- test 비율
+        name (str) -- dataset name, e.g. 'high', 'mid', 'low'
+        target (str) -- column to predict
+        index_col (str) -- column used as the index (excluded from the features)
+        test_size (float) -- fraction of samples in the test set
         random_state (int) -- split seed
-        data_dir (str or Path, optional) -- dataset 폴더. None이면 resolve_data_dir()를 따른다
+        data_dir (str or Path, optional) -- dataset folder. If None, resolve_data_dir() decides
 
     Returns:
         x_tr, x_ts, y_tr, y_ts, feature_names

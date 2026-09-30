@@ -4,7 +4,7 @@ from gp.utils import _partition_estimators, check_random_state
 
 
 def test_partition_estimators():
-    # NumPy 1.24+에서 np.int 제거로 fit()이 실패하던 경로
+    # fit() used to fail here on NumPy 1.24+ because np.int was removed
     n_jobs, n_per_job, starts = _partition_estimators(10, 3)
     assert n_jobs == 3
     assert n_per_job == [4, 3, 3]

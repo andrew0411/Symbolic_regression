@@ -38,14 +38,14 @@ def test_incomplete_program_is_rejected():
 
 @pytest.mark.parametrize('metric', ['rmse', 'mse', 'mean absolute error'])
 def test_non_finite_fitness_is_worst(metric):
-    # X0=100에서 pow3를 5번 중첩하면 overflow(inf) → sin(inf) = NaN
+    # Nesting pow3 five times at X0=100 overflows to inf, and sin(inf) = NaN
     program = make_program([F['sin']] + [F['pow3']] * 5 + [0], metric)
     X = np.array([[100., 0.], [100., 0.]])
     assert program.raw_fitness(X, np.zeros(2), np.ones(2)) == np.inf
 
 
 def test_auto_parsimony_survives_overflow():
-    # 1e100 수준 입력이면 pow3·mul 한 번의 중첩으로도 overflow한다
+    # With inputs around 1e100, a single nested pow3 or mul already overflows
     rng = np.random.RandomState(0)
     X = rng.uniform(1e99, 1e100, (100, 2))
     est = SymbolicRegressor(population_size=300, generations=1,
@@ -53,6 +53,6 @@ def test_auto_parsimony_survives_overflow():
                             parsimony_coefficient='auto', random_state=0)
     est.fit(X, X[:, 0])
     population = est._programs[-1]
-    # 전제: overflow한 프로그램이 실제로 있어야 이 테스트가 의미가 있다
+    # Precondition: the test is only meaningful if some programs overflowed
     assert any(np.isinf(p.raw_fitness_) for p in population)
     assert not any(np.isnan(p.fitness_) for p in population)
